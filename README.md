@@ -1,16 +1,12 @@
-# roomba
+# Roomba
 
-A new Flutter project.
+The robot's intelligence.
 
-## Getting Started
+## What is Roomba?
 
-This project is a starting point for a Flutter application.
+Roomba is a term that refers to a series of autonomous robotic vacuum cleaners made by the company iRobot, and was first introduced in September 2002. Roombas have a set of sensors used to help them navigate the floor area of a home. Roomba robotic vacuum cleaners have become popular household appliances, offering convenience and efficiency in maintaining clean floors with minimal effort from the user.
 
-A few resources to get you started if this is your first Flutter project:
+## What exactly does a Roomba do?
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Roomba is an autonomous vacuum and one of the most popular consumer robots in existence. It navigates around clutter and under furniture cleaning your floors, and returns to its charging dock when finished.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
