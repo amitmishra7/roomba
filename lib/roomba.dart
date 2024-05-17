@@ -362,6 +362,7 @@ class _RoombaState extends State<Roomba> {
               child: const Text('Restart'),
               onPressed: () {
                 Navigator.of(context).pop();
+                reset();
               },
             ),
           ],
