@@ -1,10 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
 class Roomba extends StatefulWidget {
   const Roomba({super.key});
@@ -14,9 +10,9 @@ class Roomba extends StatefulWidget {
 }
 
 class _RoombaState extends State<Roomba> {
-  var dirty = [];
-  var origin = 56;
-  var current = 56;
+  var dirtyTiles = [];
+  var origin = 0;
+  var currentIndex = 0;
   var battery = 1000;
   var score = 0;
   var logs = [];
@@ -35,102 +31,102 @@ class _RoombaState extends State<Roomba> {
       throw ArgumentError("Count must be less than or equal to max - min + 1");
     }
 
-    Set<int> uniqueNumbers = Set<int>();
+    Set<int> uniqueNumbers = <int>{};
     Random random = Random();
 
     while (uniqueNumbers.length < count) {
       var uniqueNo = min + random.nextInt(max - min + 1);
       uniqueNumbers.add(uniqueNo);
-      dirty.add(uniqueNo);
+      dirtyTiles.add(uniqueNo);
     }
   }
 
   makePaths() {
-    if (dirty.isEmpty && !isLast) {
-      dirty.add(origin);
+    if (dirtyTiles.isEmpty && !isLast) {
+      dirtyTiles.add(origin);
       isLast = true;
     }
-    for (int i = 0; i < dirty.length; i++) {
+    for (int i = 0; i < dirtyTiles.length; i++) {
       var tempPath = <int>[];
-      tempPath.add(current);
-      var element = dirty[i];
-      var diff;
+      tempPath.add(currentIndex);
+      var element = dirtyTiles[i];
+      var difference;
 
-      if (element < current) {
+      if (element < currentIndex) {
         //move up or left
-        diff = current - element;
-        var q = diff ~/ 8;
-        var r = diff % 8;
-        if (q > 0) {
-          for (int i = 0; i < q; i++) {
+        difference = currentIndex - element;
+        var quotient = difference ~/ 8;
+        var remainder = difference % 8;
+        if (quotient > 0) {
+          for (int i = 0; i < quotient; i++) {
             tempPath.add(tempPath.last - 8);
           }
-          checkIfSameLineOrMoveUp(r, element, tempPath);
+          checkIfSameLineOrMoveUp(remainder, element, tempPath);
         } else {
-          checkIfSameLineOrMoveUp(r, element, tempPath);
+          checkIfSameLineOrMoveUp(remainder, element, tempPath);
         }
       } else {
         //move down or right
-        diff = element - current;
-        var q = diff ~/ 8;
-        var r = diff % 8;
-        if (q > 0) {
-          for (int i = 0; i < q; i++) {
+        difference = element - currentIndex;
+        var quotient = difference ~/ 8;
+        var remainder = difference % 8;
+        if (quotient > 0) {
+          for (int i = 0; i < quotient; i++) {
             tempPath.add(tempPath.last + 8);
           }
-          checkIfSameLineOrMoveDown(r, element, tempPath);
+          checkIfSameLineOrMoveDown(remainder, element, tempPath);
         } else {
-          // check if number is in same line or next line
-          checkIfSameLineOrMoveDown(r, element, tempPath);
+          // check if index is in same line or next line
+          checkIfSameLineOrMoveDown(remainder, element, tempPath);
         }
       }
-      route[dirty[i]] = tempPath;
+      route[dirtyTiles[i]] = tempPath;
     }
     var distance = route[route.keys.first]!.length;
-    var number = route.keys.first;
+    var index = route.keys.first;
     route.forEach((key, value) {
       if (value.isEmpty || value.length < distance) {
         distance = value.length;
-        number = key;
+        index = key;
       }
     });
-    var array = route[number];
+    var array = route[index];
     var initialBattery = battery;
     if (distance == 0) {
-      path.add(number);
-      current = number;
-      logs.add('Clean $number directly');
+      path.add(index);
+      currentIndex = index;
+      logs.add('Clean $index directly');
     } else {
       for (int i = 0; i < distance; i++) {
         path.add(array![i]);
-        current = array[i];
+        currentIndex = array[i];
         if (i > 0) {
           battery = battery - 10;
           score = score - 1;
         }
       }
       logs.add(
-          'Clean $number using path $array with initial battery $initialBattery and current battery $battery with ${distance - 1} steps');
+          'Clean $index using path $array with initial battery $initialBattery and current battery $battery with ${distance - 1} steps');
     }
-    route.remove(number);
-    dirty.remove(number);
+    route.remove(index);
+    dirtyTiles.remove(index);
     if (!isLast) {
       score = score + 10;
     }
     setState(() {});
   }
 
-  void checkIfSameLineOrMoveUp(int r, int element, List<int> tempPath) {
+  void checkIfSameLineOrMoveUp(int remainder, int element, List<int> tempPath) {
     // check if number is in same line or previous line
-    var array = [];
-    int q = tempPath.last ~/ 8;
+    var currentLine = [];
+    int quotient = tempPath.last ~/ 8;
     for (int i = 0; i < 8; i++) {
-      array.add((q * 8) + i);
+      currentLine.add((quotient * 8) + i);
     }
-    if (array.contains(element)) {
+    if (currentLine.contains(element)) {
       // move on same line
-      if (r > 0) {
-        for (int i = 0; i < r; i++) {
+      if (remainder > 0) {
+        for (int i = 0; i < remainder; i++) {
           tempPath.add(tempPath.last - 1);
         }
       }
@@ -144,17 +140,17 @@ class _RoombaState extends State<Roomba> {
     }
   }
 
-  void checkIfSameLineOrMoveDown(int r, int element, List<int> tempPath) {
+  void checkIfSameLineOrMoveDown(int remainder, int element, List<int> tempPath) {
     // check if number is in same line or previous line
-    var array = [];
-    int q = tempPath.last ~/ 8;
+    var currentLine = [];
+    int quotient = tempPath.last ~/ 8;
     for (int i = 0; i < 8; i++) {
-      array.add((q * 8) + i);
+      currentLine.add((quotient * 8) + i);
     }
-    if (array.contains(element)) {
+    if (currentLine.contains(element)) {
       // move on same line
-      if (r > 0) {
-        for (int i = 0; i < r; i++) {
+      if (remainder > 0) {
+        for (int i = 0; i < remainder; i++) {
           tempPath.add(tempPath.last + 1);
         }
       }
@@ -187,7 +183,7 @@ class _RoombaState extends State<Roomba> {
                     buildDetails('SCORE', score, Colors.greenAccent),
                     buildDetails('ORIGIN', origin, Colors.amber),
                     buildDetails('BATTERY', battery, Colors.redAccent),
-                    buildDetails('CURRENT', current, Colors.lightBlueAccent),
+                    buildDetails('CURRENT', currentIndex, Colors.lightBlueAccent),
                   ],
                 ),
                 Padding(
@@ -227,9 +223,9 @@ class _RoombaState extends State<Roomba> {
 
   reset() {
     setState(() {
-      dirty.clear();
+      dirtyTiles.clear();
       origin = 56;
-      current = 56;
+      currentIndex = 56;
       battery = 1000;
       score = 0;
       logs.clear();
@@ -237,7 +233,7 @@ class _RoombaState extends State<Roomba> {
       route = {};
       isLast = false;
       generateUniqueRandomNumbers(0, 64, 18);
-      dirty.sort();
+      dirtyTiles.sort();
     });
   }
 
@@ -288,7 +284,7 @@ class _RoombaState extends State<Roomba> {
           decoration: BoxDecoration(
             color: path.contains(index)
                 ? Colors.greenAccent
-                : dirty.contains(index)
+                : dirtyTiles.contains(index)
                     ? Colors.yellow
                     : Colors.lightBlueAccent,
             borderRadius: BorderRadius.circular(5),
@@ -299,10 +295,10 @@ class _RoombaState extends State<Roomba> {
                 padding: const EdgeInsets.all(4.0),
                 child: Text(
                   '$index',
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
-              if (index == current)
+              if (index == currentIndex)
                 const Center(
                   child: Icon(
                     Icons.mouse,
@@ -353,7 +349,7 @@ class _RoombaState extends State<Roomba> {
       barrierDismissible: false, // User must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Game Over'),
+          title: const Text('Game Over'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -363,7 +359,7 @@ class _RoombaState extends State<Roomba> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Restart'),
+              child: const Text('Restart'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
