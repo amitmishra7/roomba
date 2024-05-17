@@ -12,7 +12,9 @@ Roomba is an autonomous vacuum and one of the most popular consumer robots in ex
 
 ## How is this project related to Roomba?
 
-This project showcases how a Roomba-like robot operates, mimicking its movement to clean a dirty floor. It's built using Flutter and employs algorithms to replicate the navigation patterns of a Roomba vacuum cleaner
+This project showcases how a Roomba-like robot operates, mimicking its movement to clean a dirty floor. It's built using Flutter and employs algorithms to replicate the navigation patterns of a Roomba vacuum cleaner.
+
+You can try the roomba robot from [here](https://amitmishra7.github.io/roomba_robot/)
 
 
 ## How it works?
