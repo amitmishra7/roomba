@@ -89,11 +89,11 @@ That's it folks! We're done with all the coding. Just go ahead and run your app!
 
 Fantastic!! You have just learned how to create a Roomba in flutter.
 
-## Important:
+## Important
 
-This repository is only for providing information on Roomba Robot. Please do not misuse it.
+This repository is only for providing information on Roomba Robot. Please do not misuse it. You can view the whole source code form [here](https://github.com/amitmishra7/roomba)
 
-## Author:
+## Author
 
 * [Amit Mishra](https://github.com/amitmishra7)
 
